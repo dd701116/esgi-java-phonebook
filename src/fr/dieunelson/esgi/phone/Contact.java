@@ -1,18 +1,23 @@
 package fr.dieunelson.esgi.phone;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
 public class Contact {
 
     private String name;
     private String phoneNumber;
-    private HashMap<String, String> data;
+    private Optional<String> data;
 
     public Contact(String name, String phoneNumber) {
+        this(name,phoneNumber, Optional.empty());
+    }
+
+    public Contact(String name, String phoneNumber, Optional data) {
         this.name = name.trim();
         this.phoneNumber = phoneNumber.trim();
-        this.data = new HashMap<>();
+        this.data = data;
     }
 
     public String getName() {
@@ -31,19 +36,11 @@ public class Contact {
         this.phoneNumber = phoneNumber.trim();
     }
 
-    public void add(String name, String value) {
-        this.data.put(name.trim(), value.trim());
+    public void setData(Optional<String> data) {
+        this.data = data;
     }
 
-    public String get(String key) {
-        return this.data.get(key);
-    }
-
-    public String delete(String key) {
-        return this.data.remove(key);
-    }
-
-    public Set<String> getDataKey() {
-        return this.data.keySet();
+    public Optional<String> getData() {
+        return data;
     }
 }
