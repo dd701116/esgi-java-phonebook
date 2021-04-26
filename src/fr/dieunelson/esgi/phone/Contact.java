@@ -1,9 +1,6 @@
 package fr.dieunelson.esgi.phone;
 
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.Set;
-
 public class Contact {
 
     private String name;
