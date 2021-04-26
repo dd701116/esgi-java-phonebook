@@ -5,6 +5,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.Stack;
 
 public class PhoneBook implements ActionListener, ListSelectionListener {
@@ -35,6 +36,15 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
         list1.setListData(this.contacts.getKeys().toArray(new String[0]));
     }
 
+    public PhoneBook(String path) throws IOException {
+        this();
+        String data = this.readFile(path);
+        if (data!=null){
+            this.contacts.build(data);
+        }
+
+    }
+
     public void start() {
         this.frame = new JFrame("Phone Book");
         this.frame.setContentPane(this.rootPan);
@@ -46,7 +56,16 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
     }
 
     public static void main(String[] args) {
-        new PhoneBook().start();
+
+        try {
+            if (args.length>2){
+                new PhoneBook(args[1]).start();
+            }else{
+                new PhoneBook().start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void createNewContact() {
@@ -142,5 +161,23 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
         this.newContact = false;
         JList list = (JList)e.getSource();
         this.read(list.getSelectedValue().toString());
+    }
+
+    private String readFile(String filepath) throws IOException {
+        File fp = new File(filepath);
+
+        if (fp.exists()) {
+            FileReader fr = new FileReader(fp);
+            BufferedReader br = new BufferedReader(fr);
+
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while((line = br.readLine()) != null) { builder.append(line); }
+
+            fr.close();
+            return builder.toString();
+        }else{
+            return null;
+        }
     }
 }

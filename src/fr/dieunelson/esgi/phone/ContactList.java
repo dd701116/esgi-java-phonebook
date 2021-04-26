@@ -64,8 +64,6 @@ public class ContactList implements Exportable{
     public void buildAppend(String data) {
         String[] contacts = data.split("[SEPARATOR/ITEM]");
         String[] contactBuilder;
-        String[] contactDataBuilder;
-        String[] contactDataBuilder2;
         Contact contact;
         for (String data1 : contacts) {
             contactBuilder = data1.split("[SEPARATOR/PARAM]");
