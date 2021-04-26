@@ -29,6 +29,12 @@
               <text value="Export"/>
             </properties>
           </component>
+          <component id="db71b" class="javax.swing.JButton" binding="filterButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Filter"/>
+            </properties>
+          </component>
         </children>
       </toolbar>
       <grid id="3dbf0" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

@@ -20,6 +20,7 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
     private JButton newButton;
     private JButton importButton;
     private JButton exportButton;
+    private JButton filterButton;
     private boolean newContact;
     private Stack<String> history;
 
