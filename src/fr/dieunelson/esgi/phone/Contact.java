@@ -6,8 +6,8 @@ public class Contact {
     private String phoneNumber;
 
     public Contact(String name, String phoneNumber) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
+        this.name = name.trim();
+        this.phoneNumber = phoneNumber.trim();
     }
 
     public String getName() {
@@ -15,7 +15,7 @@ public class Contact {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 
     public String getPhoneNumber() {
@@ -23,6 +23,7 @@ public class Contact {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        this.phoneNumber = phoneNumber.trim();
     }
+
 }
