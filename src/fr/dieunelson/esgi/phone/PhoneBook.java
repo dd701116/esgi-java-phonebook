@@ -3,12 +3,18 @@ package fr.dieunelson.esgi.phone;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Stack;
 
-public class PhoneBook implements ActionListener, ListSelectionListener {
+public class PhoneBook extends Component implements ActionListener, ListSelectionListener {
     private ContactList contacts;
     private JPanel rootPan;
     private JFrame frame;
@@ -22,8 +28,11 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
     private JButton importButton;
     private JButton exportButton;
     private JButton filterButton;
+    private JTextPane textPane1;
+    private JButton pathChooser;
     private boolean newContact;
     private Stack<String> history;
+    private String path;
 
     public PhoneBook() {
         this.contacts = new ContactList();
@@ -32,17 +41,20 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
         deleteButton.addActionListener(this);
         saveButton.addActionListener(this);
         newButton.addActionListener(this);
+        importButton.addActionListener(this);
+        exportButton.addActionListener(this);
+        filterButton.addActionListener(this);
         list1.addListSelectionListener(this);
         list1.setListData(this.contacts.getKeys().toArray(new String[0]));
     }
 
     public PhoneBook(String path) throws IOException {
         this();
-        String data = this.readFile(path);
-        if (data!=null){
-            this.contacts.build(data);
-        }
-
+        this.path = Paths.get(path).toAbsolutePath().toString();
+        String data = this.readFile();
+        this.contacts.build(data);
+        this.textPane1.setText(this.path);
+        this.list1.setListData(this.contacts.getKeys().toArray());
     }
 
     public void start() {
@@ -58,8 +70,9 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
     public static void main(String[] args) {
 
         try {
-            if (args.length>2){
-                new PhoneBook(args[1]).start();
+            if (args.length>=1){
+                System.out.println(args[0]);
+                new PhoneBook(args[0]).start();
             }else{
                 new PhoneBook().start();
             }
@@ -133,6 +146,28 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
         this.saveButton.setEnabled(false);
     }
 
+    private void chooseFilePath() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Select File...");
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter restrict = new FileNameExtensionFilter("Only .phone-book files", "phone-book");
+        chooser.addChoosableFileFilter(restrict);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            System.out.println("getCurrentDirectory(): "
+                    +  chooser.getCurrentDirectory());
+            System.out.println("getSelectedFile() : "
+                    +  chooser.getSelectedFile());
+
+            this.path = chooser.getSelectedFile().getAbsolutePath();
+            if (!this.path.substring(this.path.length()-10, this.path.length()).equals("phone-book")){
+                this.path+=".phone-book";
+            }
+            this.textPane1.setText(this.path);
+        }
+    }
+
     /**
      * Invoked when an action occurs.
      *
@@ -140,14 +175,38 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(this.newButton)) {
-            this.createNewContact();
-        }else if (e.getSource().equals(this.saveButton) && this.newContact) {
-            this.create();
-        }else if (e.getSource().equals(this.saveButton) && !this.newContact) {
-            this.update();
-        }else if (e.getSource().equals(this.deleteButton)) {
-            this.delete();
+        try {
+            if (e.getSource().equals(this.newButton)) {
+                this.createNewContact();
+                this.save();
+            }else if (e.getSource().equals(this.saveButton) && this.newContact) {
+                this.create();
+                this.save();
+            }else if (e.getSource().equals(this.saveButton) && !this.newContact) {
+                this.update();
+                this.save();
+            }else if (e.getSource().equals(this.deleteButton)) {
+                this.delete();
+                this.save();
+            }else if (e.getSource().equals(this.exportButton)) {
+                    this.chooseFilePath();
+                    this.save();
+            }else if (e.getSource().equals(this.importButton)) {
+                    this.chooseFilePath();
+                    String data = this.readFile();
+                    this.contacts.build(data);
+                    this.list1.setListData(this.contacts.getKeys().toArray());
+            }
+        } catch (IOException ioException) {
+            //ioException.printStackTrace();
+        } catch (NullPointerException ioException) {
+            //ioException.printStackTrace();
+        }
+    }
+
+    private void save() throws IOException {
+        if (this.path!=null) {
+            this.writeFile();
         }
     }
 
@@ -163,21 +222,16 @@ public class PhoneBook implements ActionListener, ListSelectionListener {
         this.read(list.getSelectedValue().toString());
     }
 
-    private String readFile(String filepath) throws IOException {
-        File fp = new File(filepath);
-
-        if (fp.exists()) {
-            FileReader fr = new FileReader(fp);
-            BufferedReader br = new BufferedReader(fr);
-
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while((line = br.readLine()) != null) { builder.append(line); }
-
-            fr.close();
-            return builder.toString();
-        }else{
-            return null;
+    private String readFile() throws IOException, NullPointerException {
+        List<String> lines = Files.readAllLines(Paths.get(this.path));
+        StringBuilder builder = new StringBuilder();
+        for (String line : lines) {
+            builder.append(line);
         }
+        return builder.toString();
+    }
+
+    private void writeFile() throws IOException {
+        Files.write(Paths.get(this.path), this.contacts.export().getBytes());
     }
 }

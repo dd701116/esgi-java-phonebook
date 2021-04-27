@@ -48,9 +48,9 @@ public class ContactList implements Exportable{
         Contact contact;
         for (String name: this.contacts.keySet()) {
             contact = this.contacts.get(name);
-            builder.append(contact.getName()+"[SEPARATOR/PARAM]");
-            builder.append(contact.getPhoneNumber()+"[SEPARATOR/PARAM]");
-            builder.append(contact.getData()+"[SEPARATOR/ITEM]");
+            builder.append(contact.getName()+"SEPARATOR/PARAM");
+            builder.append(contact.getPhoneNumber()+"SEPARATOR/PARAM");
+            builder.append(contact.getData().get()+"SEPARATOR/ITEM");
         }
         return builder.toString();
     }
@@ -62,12 +62,20 @@ public class ContactList implements Exportable{
     }
 
     public void buildAppend(String data) {
-        String[] contacts = data.split("[SEPARATOR/ITEM]");
+        System.out.println(data);
+        String[] contacts = data.split("SEPARATOR/ITEM");
         String[] contactBuilder;
         Contact contact;
+        String note;
+        System.out.println(contacts.length);
         for (String data1 : contacts) {
-            contactBuilder = data1.split("[SEPARATOR/PARAM]");
-            contact = new Contact(contactBuilder[0], contactBuilder[1], Optional.ofNullable(contactBuilder[2]));
+            note = null;
+            contactBuilder = data1.split("SEPARATOR/PARAM");
+            System.out.println(contactBuilder.length);
+            if (contactBuilder.length>2) {
+               note  = contactBuilder[2];
+            }
+            contact = new Contact(contactBuilder[0], contactBuilder[1], Optional.ofNullable(note));
             this.addContact(contact.getName(), contact);
         }
     }

@@ -26,13 +26,26 @@
           <component id="adcfd" class="javax.swing.JButton" binding="exportButton" default-binding="true">
             <constraints/>
             <properties>
+              <enabled value="true"/>
               <text value="Export"/>
             </properties>
           </component>
           <component id="db71b" class="javax.swing.JButton" binding="filterButton" default-binding="true">
             <constraints/>
             <properties>
+              <enabled value="false"/>
               <text value="Filter"/>
+            </properties>
+          </component>
+          <component id="1464" class="javax.swing.JSeparator">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="c5e53" class="javax.swing.JTextPane" binding="textPane1" default-binding="true">
+            <constraints/>
+            <properties>
+              <editable value="false"/>
+              <enabled value="false"/>
             </properties>
           </component>
         </children>
